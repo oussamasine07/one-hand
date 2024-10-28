@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1730123952 source:c:\users\sineo\documents\enaa\person-crud\one-hand\one-hand\main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+
