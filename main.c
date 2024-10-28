@@ -57,7 +57,6 @@ int main()
 
     // run the application
     do {
-
         // create a switch statment to keep track state of the current session if it's create, read delete or update
         switch (appState) {
 
@@ -87,6 +86,11 @@ int main()
                 scanf("%d", &searchId);
                 readTask( searchId );
                 break;
+            case 'U':
+                printf("Please enter Task ID ");
+                scanf("%d", &searchId);
+                updateTask( searchId );
+                break;
             case 'Q':
                 printf("Have a good time!!\n");
                 running = false;
@@ -98,22 +102,6 @@ int main()
     return 0;
 }
 
-int readBulkTasks () {
-    countedTasks = countTasks();
-    if ( countedTasks > 0 ) {
-        for ( int i = 0; i < countedTasks; i++ ) {
-            printf("TASK: %s\n", tasks[i].taskName);
-            printf("PRIORITY: %s\n", tasks[i].priority);
-            printf("STATUS: %s\n", tasks[i].status);
-            printf("DATE: %d-%d-%d\n", tasks[i].date.day, tasks[i].date.month, tasks[i].date.year);
-        }
-        appState = 'H';
-
-    } else {
-        printf("To see all tasks you need to create new one \n");
-        appState = 'C';
-    }
-}
 
 int createTask () {
     printf("*****************************************************\n");
@@ -188,6 +176,109 @@ int readTask ( int id ) {
                 printf("PRIORITY: %s\n", tasks[i].priority);
                 printf("STATUS: %s\n", tasks[i].status);
                 printf("DATE: %d-%d-%d\n", tasks[i].date.day, tasks[i].date.month, tasks[i].date.year);
+                found = 1;
+                break;
+            }
+        }
+        if ( !found ) {
+            printf("This task does not exists\n");
+        }
+        appState = 'H';
+    }
+    else {
+        printf("the list of tasks is empty, you new create task at first\n");
+        appState = 'C';
+    }
+}
+
+int readBulkTasks () {
+    countedTasks = countTasks();
+    if ( countedTasks > 0 ) {
+        for ( int i = 0; i < countedTasks; i++ ) {
+            printf("TASK: %s\n", tasks[i].taskName);
+            printf("PRIORITY: %s\n", tasks[i].priority);
+            printf("STATUS: %s\n", tasks[i].status);
+            printf("DATE: %d-%d-%d\n", tasks[i].date.day, tasks[i].date.month, tasks[i].date.year);
+        }
+        appState = 'H';
+
+    } else {
+        printf("To see all tasks you need to create new one \n");
+        appState = 'C';
+    }
+}
+
+int updateTask ( int id ) {
+    countedTasks = countTasks();
+    int found = 0;
+    char taskName[50], priority[50], status[50], checkAdd, date;
+    int insertCount, day, month, year;
+
+    if (countedTasks > 0) {
+        for ( int i = 0; i < countedTasks; i++ ) {
+            if ( tasks[i].id == id ) {
+                printf("Please enter Task name or enter (E) to keep it as it is ");
+                scanf("%s", &taskName);
+                if ( taskName != 'E' ) {
+                    strcpy(taskName, tasks[i].taskName);
+                }
+
+                printf("Please enter Task priority or enter (E) to keep it as is ");
+                scanf("%s", &priority);
+                if ( priority != 'E' ) {
+                    strcpy(priority, tasks[i].priority);
+                }
+
+                printf("Please enter Task status or enter (E) to keep it as is ");
+                scanf("%s", &status);
+                if ( status != 'E' ) {
+                    printf("Please choose one of the allowed statuses\n");
+                    printf("1. todo\n");
+                    printf("2. working\n");
+                    printf("3. done");
+
+                    int choice;
+                    scanf("%d", &choice);
+
+                    // we need to force the user enter only (1,2,3)
+                    _Bool checkChoice = true;
+                    do {
+                        if ( choice == 1 || choice == 2 || choice == 3 ) {
+                            checkChoice = false;
+                        } else {
+                            printf("You should only choose one of these numbers (1,2,3) ");
+                            scanf("%d", &choice);
+                        }
+                    } while( checkChoice );
+
+                    if ( choice == 1 ) {
+                        strcpy("todo", tasks[i].status );
+                    }
+                    else if ( choice == 2 ) {
+                        strcpy("working", tasks[i].status );
+                    }
+                    else if ( choice == 3 ) {
+                        strcpy("done", tasks[i].status );
+                    }
+
+                }
+
+                printf("Please enter Task Date or enter (E) to keep it as is ");
+                scanf("%s", &date);
+                if ( date != 'E' ) {
+                    printf("Please enter Day");
+                    scanf("%d", &day);
+                    tasks[i].date.day = day;
+
+                    printf("Please enter Month");
+                    scanf("%d", &month);
+                    tasks[i].date.month = month;
+
+                    printf("Please enter Year");
+                    scanf("%d", &day);
+                    tasks[i].date.year = year;
+                }
+
                 found = 1;
                 break;
             }
