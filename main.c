@@ -42,7 +42,7 @@ int readBulkTasks ();
 int updateTask ( int id );
 
 // delete task
-int deleteTask ();
+int deleteTask ( int id );
 
 int countTasks ();
 
@@ -91,6 +91,11 @@ int main()
                 printf("Please enter Task ID ");
                 scanf("%d", &searchId);
                 updateTask( searchId );
+                break;
+            case 'D':
+                printf("Please enter Task ID you want to delete ");
+                scanf("%d", &searchId);
+                deleteTask( searchId );
                 break;
             case 'Q':
                 printf("Have a good time!!\n");
@@ -327,6 +332,50 @@ int updateTask ( int id ) {
         appState = 'C';
     }
 }
+
+int deleteTask ( int id ) {
+    // find the task;
+    int countedTasks = countTasks();
+    int found = 0,  idx = -1;
+    char name[50], confirm;
+
+    if ( countedTasks > 0) {
+        // do this code
+        for ( int i = 0; i < countedTasks; i++ ) {
+            if ( tasks[i].id == id ) {
+                // get the user you want to delete
+                idx = i;
+                strcpy(name, tasks[i].taskName);
+                found = 1;
+            }
+        }
+
+        // check if the task exists
+        if (!found) {
+            printf("This task is NOT FOUND!!");
+        }
+        else {
+            printf("Are you sure you want to delete <<<%s>>> ?, Type (Y/N)", name);
+            scanf("%s", &confirm);
+            if ( confirm == 'Y' ) {
+                if ( idx != -1 ) {
+                    for ( int i = idx; i < countedTasks; i++ ) {
+                        tasks[i] = tasks[i+1];
+                    }
+                }
+            }
+            else {
+                printf("Deleting Canceled!!");
+            }
+            appState = 'H';
+        }
+    }
+    else {
+        printf("Task list is empty, you need to create one at first\n");
+        appState = 'C';
+    }
+}
+
 
 int countTasks () {
     int count = 0;
