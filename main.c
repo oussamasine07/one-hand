@@ -46,6 +46,8 @@ int deleteTask ( int id );
 
 int countTasks ();
 
+int filterTasks ();
+
 int main()
 {
     printf("ONE HAND\n");
@@ -389,7 +391,29 @@ int countTasks () {
     return count;
 }
 
+int filterTasks () {
+    printf("please select how you want to filter your tasks\n");
+    printf("1. Priority\n");
+    printf("2. Status");
 
+    int filterChoice;
+    _Bool filteringCheck = true;
+
+    scanf("%d", &filterChoice);
+
+    do {
+        if (filterChoice == 1 || filterChoice == 2) {
+            filteringCheck = false;
+        }
+        else {
+            printf("Invalide choices, please choose (1,2) ");
+            scanf("%d", filterChoice);                                                                                                                                    ");
+        }
+    } while ( filteringCheck );
+
+
+
+}
 
 
 
