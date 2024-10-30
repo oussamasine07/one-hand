@@ -427,7 +427,6 @@ int deleteTask ( int id ) {
     }
 }
 
-
 int countTasks () {
     int count = 0;
 
