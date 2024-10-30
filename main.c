@@ -118,9 +118,11 @@ int createTask () {
     printf("******************* CREATE TASK *********************\n");
     printf("*****************************************************\n");
 
-    char taskName[50], priority[50], checkAdd;
-    int insertCount, day, month, year, status;
+    char taskName[50], checkAdd;
+    int insertCount, day, month, year, status, priority;
     _Bool adding = true;
+    _Bool statusCheck = true;
+    _Bool priorityCheck = true;
 
     // ask the user to enter how many tasks he want to enter
     printf("please enter how many tasks you want to enter ");
@@ -131,8 +133,21 @@ int createTask () {
             printf("Please enter task name ");
             scanf("%s", &taskName);
 
-            printf("Please enter priority level ");
-            scanf("%s", &priority);
+            printf("Please enter Priority \n");
+            printf("1. low\n");
+            printf("2. high\n");
+            scanf("%d", &priority);
+
+            // validate priority field
+            do {
+                if ( priority == 1 || priority == 2 ) {
+                    priorityCheck = false;
+                }
+                else {
+                    printf("You can only choose a valid priority (1,2,3)");
+                    scanf("%d", &priority);
+                }
+            } while ( priorityCheck );
 
             printf("Please enter status: \n");
             printf("1. Todo\n");
@@ -141,17 +156,16 @@ int createTask () {
             printf("Make your choice ");
             scanf("%d", &status);
 
-            _Bool statusCheck = true;
+            // validate status field
             do {
                 if ( status == 1 || status == 2 || status == 3 ) {
                     statusCheck = false;
                 }
                 else {
-                    printf("You can only choose (1,2,3)");
+                    printf("You can only choose a valid status (1,2,3)");
                     scanf("%d", &status);
                 }
             } while(statusCheck);
-
 
             printf("Day: ");
             scanf("%d", &day);
@@ -166,17 +180,27 @@ int createTask () {
             Task task;
             task.id = currentTaskIdx + 1;
             strcpy(task.taskName, taskName);
-            strcpy(task.priority, priority);
 
-            if ( status == 1 ) {
-                strcpy(task.status, "todo" );
+            switch ( priority ) {
+                case 1:
+                    strcpy(task.priority, "low" );
+                    break;
+                case 2:
+                    strcpy(task.priority, "high" );
+                    break;
             }
-            else if ( status == 1 ) {
-                strcpy(task.status, "working" );
+
+            switch ( status ) {
+                case 1:
+                    strcpy(task.status, "todo" );
+                    break;
+                case 2:
+                    strcpy(task.status, "working" );
+                    break;
+                case 3:
+                    strcpy(task.status, "done" );
             }
-            else if ( status == 1 ) {
-                strcpy(task.status, "done" );
-            }
+
 
 
             task.date.day = day;
@@ -451,10 +475,10 @@ int filterTasks () {
         strcpy(choice, "priority");
 
         if ( filter == 1 ) {
-            strcpy(choiceValue, "high");
+            strcpy(choiceValue, "low");
         }
         else if ( filter == 2 ) {
-            strcpy(choiceValue, "low");
+            strcpy(choiceValue, "high");
         }
     }
     else if ( fieldChoice == 2 ) {
