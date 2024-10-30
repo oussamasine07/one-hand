@@ -48,6 +48,8 @@ int countTasks ();
 
 int filterTasks ();
 
+int applyFiler ( char choice[50], char filter[50] );
+
 int main()
 {
     printf("ONE HAND\n");
@@ -167,13 +169,13 @@ int createTask () {
             strcpy(task.priority, priority);
 
             if ( status == 1 ) {
-                strcpy(task.status, "Todo" );
+                strcpy(task.status, "todo" );
             }
             else if ( status == 1 ) {
-                strcpy(task.status, "Working" );
+                strcpy(task.status, "working" );
             }
             else if ( status == 1 ) {
-                strcpy(task.status, "Done" );
+                strcpy(task.status, "done" );
             }
 
 
@@ -230,13 +232,36 @@ int readTask ( int id ) {
 
 int readBulkTasks () {
     countedTasks = countTasks();
+    char confirmFilter;
+
+    _Bool filtering = true;
+
     if ( countedTasks > 0 ) {
-        for ( int i = 0; i < countedTasks; i++ ) {
-            printf("TASK: %s\n", tasks[i].taskName);
-            printf("PRIORITY: %s\n", tasks[i].priority);
-            printf("STATUS: %s\n", tasks[i].status);
-            printf("DATE: %d-%d-%d\n", tasks[i].date.day, tasks[i].date.month, tasks[i].date.year);
+        printf("Do you want to apply filters ");
+        scanf("%s", &confirmFilter);
+
+        do {
+            if ( confirmFilter == 'Y' || confirmFilter == 'N' ) {
+                filtering = false;
+            }
+            else {
+                printf("Invalid character to confirm enter (Y) to cancel enter (N)");
+                scanf("%s", &confirmFilter);
+            }
+        } while (filtering);
+
+        if ( confirmFilter == 'Y' ) {
+            filterTasks();
         }
+        else {
+            for ( int i = 0; i < countedTasks; i++ ) {
+                printf("TASK: %s\n", tasks[i].taskName);
+                printf("PRIORITY: %s\n", tasks[i].priority);
+                printf("STATUS: %s\n", tasks[i].status);
+                printf("DATE: %d-%d-%d\n", tasks[i].date.day, tasks[i].date.month, tasks[i].date.year);
+            }
+        }
+
         appState = 'H';
 
     } else {
@@ -392,30 +417,109 @@ int countTasks () {
 }
 
 int filterTasks () {
+
+    countedTasks = countTasks();
+
     printf("please select how you want to filter your tasks\n");
     printf("1. Priority\n");
-    printf("2. Status");
+    printf("2. Status\n");
 
-    int filterChoice;
-    _Bool filteringCheck = true;
+    int filterChoice, fieldChoice, filter;
+    _Bool fieldCheck = true;
+    _Bool choiceCheck = true;
+    char choice[50], field[50], choiceValue[50];
 
-    scanf("%d", &filterChoice);
+    scanf("%d", &fieldChoice);
 
     do {
-        if (filterChoice == 1 || filterChoice == 2) {
-            filteringCheck = false;
+        if ( fieldChoice == 1 || fieldChoice == 2 ) {
+            fieldCheck = false;
         }
         else {
-            printf("Invalide choices, please choose (1,2) ");
-            scanf("%d", filterChoice);                                                                                                                                    ");
+            printf("Invalid choice, you're allowed to choose only (1,2) ");
+            scanf("%d", &filterChoice);
         }
-    } while ( filteringCheck );
+    } while ( fieldCheck );
 
+    if ( fieldChoice == 1 ) {
+        // filter by priority
+        printf("choose priority level: \n");
+        printf("1. low\n");
+        printf("2. high\n");
+        scanf("%d", &filter);
 
+        strcpy(choice, "priority");
+
+        if ( filter == 1 ) {
+            strcpy(choiceValue, "high");
+        }
+        else if ( filter == 2 ) {
+            strcpy(choiceValue, "low");
+        }
+    }
+    else if ( fieldChoice == 2 ) {
+        // filter statuse
+        printf("choose status type: \n");
+        printf("1. todo\n");
+        printf("2. working\n");
+        printf("3. done\n");
+
+        scanf("%d", &filter);
+
+        strcpy( choice, "status" );
+        if ( filter == 1 ) {
+            strcpy(choiceValue, "todo");
+        }
+        else if ( filter == 2 ) {
+            strcpy(choiceValue, "working");
+        }
+        else if ( filter == 3 ) {
+            strcpy(choiceValue, "done");
+        }
+    }
+
+    applyFiler( choice, choiceValue );
+    appState = 'H';
+}
+
+int applyFiler ( char choice[50], char filter[50] ) {
+    int notFound = 0;
+
+    for ( int i = 0; i < countedTasks; i++ ) {
+        // apply filter, to filter by priority or status
+        if ( strcmp( choice, "priority" ) == 0 ) {
+            if ( strcmp(tasks[i].priority, filter) == 0 ) {
+                showFields( tasks[i] );
+            }
+            else {
+                notFound = 1;
+            }
+        }
+        else if ( strcmp( choice, "status") == 0 ) {
+            if ( strcmp(tasks[i].status, filter) == 0 ) {
+                showFields( tasks[i] );
+            }
+            else {
+                notFound = 1;
+            }
+        }
+    }
+
+    if ( notFound ) {
+        printf("No task with this filter\n");
+    }
 
 }
 
+int showFields ( Task task ) {
 
+    printf("ID: %d\n", task.id);
+    printf("TASK NAME: %s\n", task.taskName);
+    printf("PRIORITY: %s\n", task.priority);
+    printf("STATUS: %s\n", task.status);
+    printf("DATE: %d-%d-%d\n", task.date.day, task.date.month, task.date.year);
+
+}
 
 
 
