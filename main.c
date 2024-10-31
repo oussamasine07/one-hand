@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <time.h>
 
 
 
@@ -11,6 +12,11 @@ typedef struct {
     int month;
     int year;
 } Date;
+
+typedef struct {
+    int isValide;
+    int message[50];
+} ValideDate;
 
 typedef struct {
     int id;
@@ -52,6 +58,8 @@ int filterTasks ();
 int applyFiler ( char choice[50], char filter[50] );
 
 int validateInts ( char chars[50] );
+
+ValideDate validateDate ( int day, int month, int year );
 
 int main()
 {
@@ -218,6 +226,10 @@ int createTask () {
 
             printf("Year: ");
             scanf("%d", &year);
+
+            ValideDate result;
+            result = validateDate(day, month, year);
+            printf("%s\n", result.message);
 
             // create an instance
             Task task;
@@ -628,7 +640,69 @@ int validateInts ( char input[50] ) {
     }
 }
 
+ValideDate validateDate ( int day, int month, int year ) {
 
+    // get current date
+    struct tm newDate = {0};
+    time_t newTime;
+    time(&newTime);
+    struct tm *currentDate = localtime( &newTime );
+
+    ValideDate validate;
+
+    if ( year < currentDate->tm_year + 1900 ) {
+        validate.isValide = 0;
+        strcpy(validate.message, "Invalide year\n");
+        return validate;
+    }
+    else {
+        // check if month is valide
+        if ( month > 12 ) {
+            validate.isValide = 0;
+            strcpy(validate.message, "Invalide month\n");
+            return validate;
+        }
+        else {
+            switch (month) {
+                case 1:
+                case 3:
+                case 5:
+                case 7:
+                case 8:
+                case 10:
+                case 12:
+                    if ( day > 32) {
+                        validate.isValide = 0;
+                        strcpy(validate.message, "Invalide day, you can enter only up to 31\n");
+                        return validate;
+                    }
+                    break;
+
+                case 4:
+                case 6:
+                case 9:
+                case 11:
+                    if ( day > 31 ) {
+                        validate.isValide = 0;
+                        strcpy(validate.message, "Invalide day, you can enter only up to 30\n");
+                        return validate;
+                    }
+                    break;
+                case 2:
+                    if ( day > 30 ) {
+                        validate.isValide = 0;
+                        strcpy(validate.message, "Invalide day, you can enter only up to 29\n");
+                        return validate;
+                    }
+                    break;
+                default:
+                    validate.isValide = 1;
+                    return validate;
+
+            }
+        }
+    }
+}
 
 
 
