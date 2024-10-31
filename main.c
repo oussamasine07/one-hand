@@ -652,7 +652,7 @@ ValideDate validateDate ( int day, int month, int year ) {
 
     if ( year < currentDate->tm_year + 1900 ) {
         validate.isValide = 0;
-        strcpy(validate.message, "Invalide year\n");
+        strcpy(validate.message, "The year you have entered is out dated\n");
         return validate;
     }
     else {
@@ -663,42 +663,83 @@ ValideDate validateDate ( int day, int month, int year ) {
             return validate;
         }
         else {
-            switch (month) {
-                case 1:
-                case 3:
-                case 5:
-                case 7:
-                case 8:
-                case 10:
-                case 12:
-                    if ( day > 32) {
-                        validate.isValide = 0;
-                        strcpy(validate.message, "Invalide day, you can enter only up to 31\n");
-                        return validate;
-                    }
-                    break;
+            // check if month is out dated
+            if ( month < currentDate->tm_mon + 1 ) {
+                validate.isValide = 0;
+                strcpy(validate.message, "the month you have entered is outdated\n");
+                return validate;
+            }
+            else {
+                // force the user to enter a valid day for a specific month ( ex: febrerary => no more than 29 days )
+                switch (month) {
+                    case 1:
+                    case 3:
+                    case 5:
+                    case 7:
+                    case 8:
+                    case 10:
+                    case 12:
+                        if ( day >= 32) {
+                            validate.isValide = 0;
+                            strcpy(validate.message, "Invalide day, you can enter only up to 31\n");
+                            return validate;
+                        }
+                        else {
+                            // check if the day is out dated
+                            if ( month == currentDate->tm_mon + 1 && day < currentDate->tm_mday ) {
+                                validate.isValide = 0;
+                                strcpy(validate.message, "the day you have entered is out dated\n");
+                                return validate;
+                            }
+                            else {
+                                validate.isValide = 1;
+                                return validate;
+                            }
+                        }
+                        break;
 
-                case 4:
-                case 6:
-                case 9:
-                case 11:
-                    if ( day > 31 ) {
-                        validate.isValide = 0;
-                        strcpy(validate.message, "Invalide day, you can enter only up to 30\n");
-                        return validate;
-                    }
-                    break;
-                case 2:
-                    if ( day > 30 ) {
-                        validate.isValide = 0;
-                        strcpy(validate.message, "Invalide day, you can enter only up to 29\n");
-                        return validate;
-                    }
-                    break;
-                default:
-                    validate.isValide = 1;
-                    return validate;
-
+                    case 4:
+                    case 6:
+                    case 9:
+                    case 11:
+                        if ( day >= 31 ) {
+                            validate.isValide = 0;
+                            strcpy(validate.message, "Invalide day, you can enter only up to 30\n");
+                            return validate;
+                        }
+                        else {
+                            // check if the day is out dated
+                            if ( month == currentDate->tm_mon + 1 && day < currentDate->tm_mday ) {
+                                validate.isValide = 0;
+                                strcpy(validate.message, "the day you have entered is out dated\n");
+                                return validate;
+                            }
+                            else {
+                                validate.isValide = 1;
+                                return validate;
+                            }
+                        }
+                        break;
+                    case 2:
+                        if ( day >= 30 ) {
+                            validate.isValide = 0;
+                            strcpy(validate.message, "Invalide day, you can enter only up to 29\n");
+                            return validate;
+                        }
+                        else {
+                            // check if the day is out dated
+                            if ( month == currentDate->tm_mon + 1 && day < currentDate->tm_mday ) {
+                                validate.isValide = 0;
+                                strcpy(validate.message, "the day you have entered is out dated\n");
+                                return validate;
+                            }
+                            else {
+                                validate.isValide = 1;
+                                return validate;
+                            }
+                        }
+                        break;
+                }
             }
         }
     }
