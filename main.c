@@ -339,7 +339,8 @@ int updateTask ( int id ) {
     countedTasks = countTasks();
     int found = 0;
     char taskName[50], priority[50], status[50], checkAdd, date[50];
-    int insertCount, day, month, year;
+    int insertCount, choice, day, month, year;
+    _Bool checkChoice;
 
     if (countedTasks > 0) {
         for ( int i = 0; i < countedTasks; i++ ) {
@@ -354,7 +355,31 @@ int updateTask ( int id ) {
                 printf("Please enter Task priority or enter (E) to keep it as is ");
                 scanf("%s", &priority);
                 if ( strcmp( priority, "E" ) != 0 ) {
-                    strcpy(tasks[i].priority, priority );
+                    printf("Please choose one of the allowed priorities\n");
+                    printf("1. low\n");
+                    printf("2. high\n");
+                    printf("make a choice ");
+
+                    scanf("%d", &choice);
+
+                    checkChoice = true;
+                    do {
+                        if ( choice == 1 || choice == 2 ) {
+                            checkChoice = false;
+                        }
+                        else {
+                            printf("please you can only enter (1,2)");
+                            scanf("%d", &choice);
+                        }
+                    } while ( checkChoice );
+
+                    if ( choice == 1 ) {
+                        strcpy(tasks[i].priority, "low" );
+                    }
+                    else if ( choice == 2 ) {
+                        strcpy(tasks[i].priority, "high" );
+                    }
+
                 }
 
                 printf("Please enter Task status or enter (E) to keep it as is Or (M) to modify ");
@@ -366,11 +391,10 @@ int updateTask ( int id ) {
                     printf("3. done\n");
                     printf("make a choice ");
 
-                    int choice;
                     scanf("%d", &choice);
 
                     // we need to force the user enter only (1,2,3)
-                    _Bool checkChoice = true;
+                    checkChoice = true;
                     do {
                         if ( choice == 1 || choice == 2 || choice == 3 ) {
                             checkChoice = false;
