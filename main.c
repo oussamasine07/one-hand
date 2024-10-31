@@ -27,6 +27,7 @@ char appState = 'H';
 int currentTaskIdx = 0;
 int countedTasks = 0;
 int searchId;
+char inputId[20];
 
 // Declare needed functions
 // create a new task
@@ -50,6 +51,8 @@ int filterTasks ();
 
 int applyFiler ( char choice[50], char filter[50] );
 
+int validateInts ( char chars[50] );
+
 int main()
 {
     printf("ONE HAND\n");
@@ -58,6 +61,7 @@ int main()
     // create a variable named running to keep the uplication running until you stop it
     _Bool running = true;
     _Bool userCheck = true;
+    _Bool inputCheck;
 
 
     // run the application
@@ -87,13 +91,39 @@ int main()
                 createTask();
                 break;
             case 'R':
+                inputCheck = true;
                 printf("Please enter Task ID ");
-                scanf("%d", &searchId);
+                scanf("%s", &inputId);
+
+                do {
+                    if ( validateInts( inputId ) ) {
+                        inputCheck = false;
+                        searchId = validateInts( inputId );
+                    }
+                    else {
+                        printf("please inter a valide ID, we accept only integers ");
+                        scanf("%s", inputId);
+                    }
+                } while( inputCheck );
+
                 readTask( searchId );
                 break;
             case 'U':
+                inputCheck = true;
                 printf("Please enter Task ID ");
-                scanf("%d", &searchId);
+                scanf("%s", &inputId);
+
+                do {
+                    if ( validateInts( inputId ) ) {
+                        inputCheck = false;
+                        searchId = validateInts( inputId );
+                    }
+                    else {
+                        printf("please inter a valide ID, we accept only integers ");
+                        scanf("%s", inputId);
+                    }
+                } while( inputCheck );
+
                 updateTask( searchId );
                 break;
             case 'D':
@@ -118,15 +148,28 @@ int createTask () {
     printf("******************* CREATE TASK *********************\n");
     printf("*****************************************************\n");
 
-    char taskName[50], checkAdd;
+    char taskName[50], checkAdd, userInputCount[20];
     int insertCount, day, month, year, status, priority;
     _Bool adding = true;
     _Bool statusCheck = true;
     _Bool priorityCheck = true;
+    _Bool integerCheck = true;
 
     // ask the user to enter how many tasks he want to enter
     printf("please enter how many tasks you want to enter ");
-    scanf("%d", &insertCount);
+    scanf("%s", &userInputCount);
+
+    do {
+        if ( validateInts( userInputCount ) ) {
+            integerCheck = false;
+            insertCount = validateInts( userInputCount );
+        }
+        else {
+            printf("Invalid number please enter valide integer ");
+            scanf("%s", &userInputCount);
+        }
+    } while ( integerCheck );
+
 
     while ( adding ) {
         for ( int i = 0; i < insertCount; i++ ) {
@@ -200,8 +243,6 @@ int createTask () {
                 case 3:
                     strcpy(task.status, "done" );
             }
-
-
 
             task.date.day = day;
             task.date.month = month;
@@ -544,6 +585,24 @@ int showFields ( Task task ) {
 
 }
 
+int validateInts ( char input[50] ) {
+    int isValid = 1;
+
+    // Check if all characters in the input are digits
+    for (int i = 0; i < strlen(input); i++) {
+        if (!isdigit(input[i])) {
+            isValid = 0;
+            break;
+        }
+    }
+
+    if (isValid) {
+        int number = atoi(input);  // Convert string to integer if valid
+        return number;
+    } else {
+        return 0;
+    }
+}
 
 
 
