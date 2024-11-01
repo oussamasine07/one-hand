@@ -61,6 +61,10 @@ int validateInts ( char chars[50] );
 
 ValideDate validateDate ( int day, int month, int year );
 
+int saveFile ( Task tasks[30] );
+
+int readTaskFile ();
+
 int main()
 {
     printf("ONE HAND\n");
@@ -269,6 +273,8 @@ int createTask () {
             tasks[currentTaskIdx] = task;
 
             currentTaskIdx++;
+
+            saveFile(tasks);
 
         }
 
@@ -764,8 +770,46 @@ ValideDate validateDate ( int day, int month, int year ) {
     }
 }
 
+int saveFile ( Task tasks[30] ) {
+    countedTasks = countTasks();
+    int countedTasks = countTasks();
+    FILE *file = fopen("tasks.xml", "w");
 
+    // Check if the file was opened successfully
+    if (file == NULL) {
+        perror("Error opening file");
+        return -1; // Return an error code
+    }
 
+    fprintf(file, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<tasks>\n");
+
+    for (int i = 0; i < countedTasks; i++) {
+        fprintf(file, "    <task>\n");
+        fprintf(file, "        <taskName>%d</taskName>\n", tasks[i].id);
+        fprintf(file, "        <taskName>%s</taskName>\n", tasks[i].taskName);
+        fprintf(file, "        <taskName>%s</taskName>\n", tasks[i].priority);
+        fprintf(file, "        <taskName>%s</taskName>\n", tasks[i].status);
+        fprintf(file, "        <taskName>%d-%d-%d</taskName>\n", tasks[i].date);
+        fprintf(file, "    </task>\n");
+    }
+
+    fprintf(file, "</tasks>\n");
+
+    fclose(file);
+    return 0; // Indicate success
+}
+
+int readTaskFile () {
+
+    countedTasks = countTasks();
+    int countedTasks = countTasks();
+    FILE *file = fopen("tasks.xml", "r");
+
+    if ( file == NULL ) {
+        printf("this does not exists yet\n");
+    }
+
+}
 
 
 
