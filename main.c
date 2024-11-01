@@ -183,7 +183,7 @@ int createTask () {
     while ( adding ) {
         for ( int i = 0; i < insertCount; i++ ) {
             printf("Please enter task name ");
-            scanf("%s", &taskName);
+            scanf(" %[^\n]", &taskName);
 
             printf("Please enter Priority \n");
             printf("1. low\n");
@@ -359,12 +359,13 @@ int updateTask ( int id ) {
     char taskName[50], priority[50], status[50], checkAdd, date[50];
     int insertCount, choice, day, month, year;
     _Bool checkChoice;
+    _Bool dateCheck;
 
     if (countedTasks > 0) {
         for ( int i = 0; i < countedTasks; i++ ) {
             if ( tasks[i].id == id ) {
                 printf("Please enter Task name or enter (E) to keep it as it is ");
-                scanf("%s", &taskName);
+                scanf(" %[^\n]", &taskName);
 
                 if ( strcmp(taskName, "E") != 0 ) {
                     strcpy(tasks[i].taskName, taskName );
@@ -434,22 +435,32 @@ int updateTask ( int id ) {
 
                 }
 
-                printf("Please enter Task Date or enter (E) to keep it as is ");
+                printf("Please enter Task Date or enter (E) to keep it as is Or (M) to modify ");
                 scanf("%s", &date);
-                printf("Compare date => %d \n", strcmp( date, "E" ));
 
                 if ( strcmp( date, "E" ) != 0 ) {
-                    printf("Please enter Day");
-                    scanf("%d", &day);
+                    printf("Please enter a valide date it should be like so (dd-mm-yyyy) ");
+                    scanf("%d-%d-%d", &day, &month, &year);
+
+                    ValideDate result;
+                    result = validateDate(day, month, year);
+                    dateCheck = true;
+
+                    do {
+                        if ( result.isValide ) {
+                            dateCheck = false;
+                        }
+                        else {
+                            printf("%s", result.message);
+                            printf("Please re-enter a valide date dd-mm-yyyy ");
+                            scanf("%d-%d-%d", &day, &month, &year);
+                        }
+                    } while ( dateCheck );
+
                     tasks[i].date.day = day;
-
-                    printf("Please enter Month");
-                    scanf("%d", &month);
                     tasks[i].date.month = month;
-
-                    printf("Please enter Year");
-                    scanf("%d", &year);
                     tasks[i].date.year = year;
+
                 }
 
                 found = 1;
