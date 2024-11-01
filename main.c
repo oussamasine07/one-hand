@@ -162,6 +162,7 @@ int createTask () {
     _Bool statusCheck = true;
     _Bool priorityCheck = true;
     _Bool integerCheck = true;
+    _Bool dateCheck = true;
 
     // ask the user to enter how many tasks he want to enter
     printf("please enter how many tasks you want to enter ");
@@ -218,23 +219,28 @@ int createTask () {
                 }
             } while(statusCheck);
 
-            printf("Day: ");
-            scanf("%d", &day);
-
-            printf("Month: ");
-            scanf("%d", &month);
-
-            printf("Year: ");
-            scanf("%d", &year);
+            printf("Please enter a valide date it should be like so (dd-mm-yyyy) ");
+            scanf("%d-%d-%d", &day, &month, &year);
 
             ValideDate result;
             result = validateDate(day, month, year);
-            printf("%s\n", result.message);
+
+            do {
+                if ( result.isValide ) {
+                    dateCheck = false;
+                }
+                else {
+                    printf("%s", result.message);
+                    printf("Please re-enter a valide date dd-mm-yyyy ");
+                    scanf("%d-%d-%d", &day, &month, &year);
+                }
+            } while ( dateCheck );
 
             // create an instance
             Task task;
             task.id = currentTaskIdx + 1;
             strcpy(task.taskName, taskName);
+
 
             switch ( priority ) {
                 case 1:
@@ -664,12 +670,8 @@ ValideDate validateDate ( int day, int month, int year ) {
         }
         else {
             // check if month is out dated
-            if ( month < currentDate->tm_mon + 1 ) {
-                validate.isValide = 0;
-                strcpy(validate.message, "the month you have entered is outdated\n");
-                return validate;
-            }
-            else {
+            if ( month >= currentDate->tm_mon + 1 ) {
+
                 // force the user to enter a valid day for a specific month ( ex: febrerary => no more than 29 days )
                 switch (month) {
                     case 1:
@@ -740,6 +742,12 @@ ValideDate validateDate ( int day, int month, int year ) {
                         }
                         break;
                 }
+
+            }
+            else {
+                validate.isValide = 0;
+                strcpy(validate.message, "the month you have entered is outdated\n");
+                return validate;
             }
         }
     }
