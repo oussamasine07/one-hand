@@ -846,18 +846,6 @@ char validateFields () {
 
 }
 
-char removeComa ( char input[50] ) {
-    int idx = 0;
-    static char charResult[50];
-    for (int i = 0; i < strlen(input); i++) {
-        if (input[i] != ',') { // Skipping commas
-            charResult[idx] = input[i]; // Changed %s to %c to print a single character
-            idx++;
-        }
-    }
-    return charResult;
-}
-
 int saveFile ( Task tasks[30] ) {
     countedTasks = countTasks();
     int countedTasks = countTasks();
