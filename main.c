@@ -67,6 +67,8 @@ int saveFile ( Task tasks[30] );
 
 int readTaskFile ();
 
+int showHeader ( char header[50] );
+
 int main()
 {
     printf("ONE HAND\n");
@@ -84,7 +86,14 @@ int main()
         switch (appState) {
 
             case 'H':
-                printf("please enter one of these letters (C,B,R,U,D)\n");
+                printf("please enter one of these letters (C,B,R,U,D,Q)\n");
+                printf("C => create a new task\n");
+                printf("R => read single task by ID\n");
+                printf("B => read all tasks\n");
+                printf("U => update a task\n");
+                printf("D => delete a task \n");
+                printf("Q => to quite the application\n");
+                printf("Your choice: ");
                 scanf("%s", &appState);
 
                 do {
@@ -156,11 +165,14 @@ int main()
     return 0;
 }
 
+int showHeader ( char header[50] ) {
+    printf("*******************************************************\n");
+    printf("********************* %s **********************\n", header);
+    printf("*******************************************************\n");
+}
 
 int createTask () {
-    printf("*****************************************************\n");
-    printf("******************* CREATE TASK *********************\n");
-    printf("*****************************************************\n");
+    showHeader("CREATE TASK");
 
     char taskName[50], checkAdd, userInputCount[20];
     int insertCount, day, month, year, status, priority;
@@ -226,7 +238,7 @@ int createTask () {
             } while(statusCheck);
 
             printf("Please enter a valide date it should be like so (dd-mm-yyyy) ");
-            scanf("%d-%d-%d", &day, &month, &year);
+            scanf("%d-%d-%d", &day, &month, &year); // user input 12-11-2024
 
             ValideDate result;
             result = validateDate(day, month, year);
