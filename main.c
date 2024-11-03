@@ -176,11 +176,7 @@ int createTask () {
 
     char taskName[50], checkAdd, userInputCount[20];
     int insertCount, day, month, year, status, priority;
-    _Bool adding = true;
-    _Bool statusCheck = true;
-    _Bool priorityCheck = true;
-    _Bool integerCheck = true;
-    _Bool dateCheck = true;
+    _Bool adding = true, validating = true;
 
     // ask the user to enter how many tasks he want to enter
     printf("please enter how many tasks you want to enter ");
@@ -188,14 +184,14 @@ int createTask () {
 
     do {
         if ( validateInts( userInputCount ) ) {
-            integerCheck = false;
+            validating = false;
             insertCount = validateInts( userInputCount );
         }
         else {
             printf("Invalid number please enter valide integer ");
             scanf("%s", &userInputCount);
         }
-    } while ( integerCheck );
+    } while ( validating );
 
 
     while ( adding ) {
@@ -209,15 +205,16 @@ int createTask () {
             scanf("%d", &priority);
 
             // validate priority field
+            validating = true;
             do {
                 if ( priority == 1 || priority == 2 ) {
-                    priorityCheck = false;
+                    validating = false;
                 }
                 else {
                     printf("You can only choose a valid priority (1,2,3)");
                     scanf("%d", &priority);
                 }
-            } while ( priorityCheck );
+            } while ( validating );
 
             printf("Please enter status: \n");
             printf("1. Todo\n");
@@ -226,33 +223,36 @@ int createTask () {
             printf("Make your choice ");
             scanf("%d", &status);
 
-            // validate status field
+            // validate status field, force the user user to inter only (1,2,3)
+            validating = true;
             do {
                 if ( status == 1 || status == 2 || status == 3 ) {
-                    statusCheck = false;
+                    validating = false;
                 }
                 else {
                     printf("You can only choose a valid status (1,2,3)");
                     scanf("%d", &status);
                 }
-            } while(statusCheck);
+            } while(validating);
 
             printf("Please enter a valide date it should be like so (dd-mm-yyyy) ");
             scanf("%d-%d-%d", &day, &month, &year); // user input 12-11-2024
 
+            // validate date formate
+            validating = true;
             ValideDate result;
             result = validateDate(day, month, year);
 
             do {
                 if ( result.isValide ) {
-                    dateCheck = false;
+                    validating = false;
                 }
                 else {
                     printf("%s", result.message);
                     printf("Please re-enter a valide date dd-mm-yyyy ");
                     scanf("%d-%d-%d", &day, &month, &year);
                 }
-            } while ( dateCheck );
+            } while ( validating );
 
             // create an instance
             Task task;
@@ -300,7 +300,8 @@ int createTask () {
             scanf("%d", &insertCount);
         }
         else {
-            printf("task created \n");
+            printf("=============== TASK CREATED ==============\n");
+            printf("\n");
             appState = 'H';
             adding = false;
         }
@@ -314,10 +315,8 @@ int readTask ( int id ) {
     if (countedTasks > 0) {
         for ( int i = 0; i < countedTasks; i++ ) {
             if ( tasks[i].id == id ) {
-                printf("TASK: %s\n", tasks[i].taskName);
-                printf("PRIORITY: %s\n", tasks[i].priority);
-                printf("STATUS: %s\n", tasks[i].status);
-                printf("DATE: %d-%d-%d\n", tasks[i].date.day, tasks[i].date.month, tasks[i].date.year);
+                // call the function that shows  task fields
+                showFields( tasks[i] );
                 found = 1;
                 break;
             }
@@ -338,11 +337,12 @@ int readBulkTasks () {
     char confirmFilter;
 
     _Bool filtering = true;
-
+    // check if the list of tasks is empty, than redirect user to create a new task
     if ( countedTasks > 0 ) {
+        // ask user if he want to filter tasks
         printf("Do you want to apply filters ");
         scanf("%s", &confirmFilter);
-
+        // force the user to enter one of (Y/N)
         do {
             if ( confirmFilter == 'Y' || confirmFilter == 'N' ) {
                 filtering = false;
@@ -357,14 +357,15 @@ int readBulkTasks () {
             filterTasks();
         }
         else {
+            printf("\n");
+            printf("================== ALL TASKS ==================\n");
             for ( int i = 0; i < countedTasks; i++ ) {
-                printf("TASK: %s\n", tasks[i].taskName);
-                printf("PRIORITY: %s\n", tasks[i].priority);
-                printf("STATUS: %s\n", tasks[i].status);
-                printf("DATE: %d-%d-%d\n", tasks[i].date.day, tasks[i].date.month, tasks[i].date.year);
+                showFields( tasks[i] );
             }
+            printf("===============================================\n");
+            printf("\n");
         }
-
+        // return the app to it's initial state
         appState = 'H';
 
     } else {
@@ -378,50 +379,55 @@ int updateTask ( int id ) {
     int found = 0, idx = 0, i, fields[4] = {0}, choice, day, month, year;
     char taskName[50], date[50], fieldsInputs[20];
 
-    _Bool checkChoice, dateCheck;
+    _Bool checkChoice, dateCheck, validating = true;
 
-    printf("Please choose the fields you want to update\n");
-    printf("1. task name\n");
-    printf("2. task priority\n");
-    printf("3. task status\n");
-    printf("4. task date\n");
-    printf("fields should be separated by comas like so (1,4,3 etc...) ");
-    scanf("%s", &fieldsInputs);
 
-    _Bool validating = true;
-    do {
-        idx = 0;
-        // check if ann chars are integrs
-        if ( validateInts( fieldsInputs ) ) {
-            //validating = false;
-            for ( i = 0; i < strlen(fieldsInputs); i++ ) {
-                fields[idx] = fieldsInputs[i] - '0';
-                // check if integers are included in (1,2,3,4)
-                if ( fields[idx] == 1 || fields[idx] == 2 || fields[idx] == 3 || fields[idx] == 4 ) {
-                    validating = false;
-                }
-                else {
-                    printf("the spesified fields don't exist, please enter one of these\n");
-                    printf("1. task name\n");
-                    printf("2. task priority\n");
-                    printf("3. task status\n");
-                    printf("4. task date\n");
-                    printf("make your choice ");
-                    scanf("%s", &fieldsInputs);
-                }
-                idx++;
-            }
-        }
-        else {
-            printf("invalide characters please enter a valide numbers ");
-            scanf("%s", &fieldsInputs);
-        }
-    } while( validating );
-
+    // check if the list is empty then redirect user to create new tasks
     if (countedTasks > 0) {
 
+        printf("Please choose the fields you want to update\n");
+        printf("1. task name\n");
+        printf("2. task priority\n");
+        printf("3. task status\n");
+        printf("4. task date\n");
+        printf("To choose enter number of fields like ex:142 ");
+        scanf("%s", &fieldsInputs);
+
+        // check if all chars are integrs
+        do {
+            idx = 0;
+
+            if ( validateInts( fieldsInputs ) ) {
+                //validating = false;
+                for ( i = 0; i < strlen(fieldsInputs); i++ ) {
+                    fields[idx] = fieldsInputs[i] - '0';
+                    // check if integers are included in (1,2,3,4)
+                    if ( fields[idx] == 1 || fields[idx] == 2 || fields[idx] == 3 || fields[idx] == 4 ) {
+                        validating = false;
+                    }
+                    else {
+                        printf("the spesified fields don't exist, please enter one of these\n");
+                        printf("1. task name\n");
+                        printf("2. task priority\n");
+                        printf("3. task status\n");
+                        printf("4. task date\n");
+                        printf("make your choice ");
+                        scanf("%s", &fieldsInputs);
+                    }
+                    idx++;
+                }
+            }
+            else {
+                printf("invalide characters please enter a valide numbers ");
+                scanf("%s", &fieldsInputs);
+            }
+        } while( validating );
+
+        // loop through all tasks
         for ( int i = 0; i < countedTasks; i++ ) {
+            // get task by id
             if ( tasks[i].id == id ) {
+                // loop through the fields, that the user intered to update
                 for ( int j = 0; j < 4; j++ ) {
 
                     if ( fields[j] == 1 ) {
@@ -435,17 +441,18 @@ int updateTask ( int id ) {
                         printf("2. high\n");
                         printf("make a choice ");
                         scanf("%d", &choice);
-                        checkChoice = true;
+                        // for the user to enter 1 or 2
+                        validating = true;
                         do {
                             if ( choice == 1 || choice == 2 ) {
-                                checkChoice = false;
+                                validating = false;
                             }
                             else {
                                 printf("please you can only enter (1,2)");
                                 scanf("%d", &choice);
                             }
-                        } while ( checkChoice );
-
+                        } while ( validating );
+                        // update priority based on user choice
                         if ( choice == 1 ) {
                             strcpy(tasks[i].priority, "low" );
                         }
@@ -462,15 +469,15 @@ int updateTask ( int id ) {
 
                         scanf("%d", &choice);
                         // we need to force the user enter only (1,2,3)
-                        checkChoice = true;
+                        validating = true;
                         do {
                             if ( choice == 1 || choice == 2 || choice == 3 ) {
-                                checkChoice = false;
+                                validating = false;
                             } else {
                                 printf("You should only choose one of these numbers (1,2,3) ");
                                 scanf("%d", &choice);
                             }
-                        } while( checkChoice );
+                        } while( validating );
 
                         if ( choice == 1 ) {
                             strcpy(tasks[i].status, "todo");
@@ -488,18 +495,18 @@ int updateTask ( int id ) {
 
                         ValideDate result;
                         result = validateDate(day, month, year);
-                        dateCheck = true;
+                        validating = true;
 
                         do {
                             if ( result.isValide ) {
-                                dateCheck = false;
+                                validating = false;
                             }
                             else {
                                 printf("%s", result.message);
                                 printf("Please re-enter a valide date dd-mm-yyyy ");
                                 scanf("%d-%d-%d", &day, &month, &year);
                             }
-                        } while ( dateCheck );
+                        } while ( validating );
 
                         tasks[i].date.day = day;
                         tasks[i].date.month = month;
@@ -587,22 +594,21 @@ int filterTasks () {
     printf("1. Priority\n");
     printf("2. Status\n");
 
-    int filterChoice, fieldChoice, filter;
-    _Bool fieldCheck = true;
-    _Bool choiceCheck = true;
+    int fieldChoice, filter;
+    _Bool validating = true;
     char choice[50], field[50], choiceValue[50];
 
     scanf("%d", &fieldChoice);
 
     do {
         if ( fieldChoice == 1 || fieldChoice == 2 ) {
-            fieldCheck = false;
+            validating = false;
         }
         else {
             printf("Invalid choice, you're allowed to choose only (1,2) ");
-            scanf("%d", &filterChoice);
+            scanf("%d", &fieldChoice);
         }
-    } while ( fieldCheck );
+    } while ( validating );
 
     if ( fieldChoice == 1 ) {
         // filter by priority
@@ -647,7 +653,8 @@ int filterTasks () {
 
 int applyFiler ( char choice[50], char filter[50] ) {
     int notFound = 0;
-
+    printf("\n");
+    printf("================== FILTERED TASKS ==================\n");
     for ( int i = 0; i < countedTasks; i++ ) {
         // apply filter, to filter by priority or status
         if ( strcmp( choice, "priority" ) == 0 ) {
@@ -667,7 +674,8 @@ int applyFiler ( char choice[50], char filter[50] ) {
             }
         }
     }
-
+    printf("===============================================\n");
+    printf("\n");
     if ( notFound ) {
         printf("No task with this filter\n");
     }
@@ -675,13 +683,11 @@ int applyFiler ( char choice[50], char filter[50] ) {
 }
 
 int showFields ( Task task ) {
-
-    printf("ID: %d\n", task.id);
+    printf("================== TASK ID: %d =================\n", task.id );
     printf("TASK NAME: %s\n", task.taskName);
     printf("PRIORITY: %s\n", task.priority);
     printf("STATUS: %s\n", task.status);
     printf("DATE: %d-%d-%d\n", task.date.day, task.date.month, task.date.year);
-
 }
 
 int validateInts ( char input[50] ) {
@@ -808,54 +814,6 @@ ValideDate validateDate ( int day, int month, int year ) {
             }
         }
     }
-}
-
-char validateFields () {
-    int fields[4], field, idx = 0;
-    char fieldsInputs[20];
-    static char filteredFields[50];
-    _Bool validating = true;
-
-    printf("Please choose the fields you want to update\n");
-    printf("1. task name\n");
-    printf("2. task priority\n");
-    printf("3. task status\n");
-    printf("4. task date\n");
-    printf("fields should be separated by commas like so (1,4,3 etc...): ");
-    scanf("%s", fieldsInputs); // Removed & since fieldsInputs is already an array
-
-    // Remove commas and print each character
-
-    for (int i = 0; i < strlen(fieldsInputs); i++) {
-        if (fieldsInputs[i] != ',') { // Skipping commas
-            filteredFields[idx] = fieldsInputs[i]; // Changed %s to %c to print a single character
-            idx++;
-        }
-    }
-
-    printf("line 860 %s\n", filteredFields);
-
-    do {
-        if ( validateInts( filteredFields ) ) {
-            validating = false;
-        }
-        else {
-            idx = 0;
-            filteredFields[0] = '\0';
-            printf("invalide characters please enter valide numbers ");
-            scanf("%s", fieldsInputs);
-            for (int i = 0; i < strlen(fieldsInputs); i++) {
-                if (fieldsInputs[i] != ',') { // Skipping commas
-                    filteredFields[idx] = fieldsInputs[i]; // Changed %s to %c to print a single character
-                    idx++;
-                }
-            }
-        }
-    } while( validating );
-
-    printf("line 860 %s\n", filteredFields);
-    return filteredFields;
-
 }
 
 int saveFile ( Task tasks[30] ) {
