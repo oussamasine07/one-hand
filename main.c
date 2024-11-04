@@ -69,8 +69,17 @@ int readTaskFile ();
 
 int showHeader ( char header[50] );
 
+int test ( int nums[4] );
+
 int main()
 {
+    int nums[4] = {1,2,3,4};
+    test( nums );
+    for ( int i = 0; i < 4; i++ ) {
+        printf("%d ", nums[i] );
+    }
+
+    /*
     printf("ONE HAND\n");
     printf("Your favorit task manager\n");
 
@@ -161,7 +170,7 @@ int main()
         }
 
     } while (running);
-
+    */
     return 0;
 }
 
@@ -857,5 +866,15 @@ int readTaskFile () {
 
 }
 
+int test ( int nums[4] ) {
 
+    for ( int i = 0; i < 4 / 2; i++ ) {
+        int temp = nums[4 - i - 1];
+        nums[4 - i - 1] = nums[i];
+        nums[i] = temp;
+    }
+
+    return 0;
+
+}
 
